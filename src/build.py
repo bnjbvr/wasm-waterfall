@@ -53,6 +53,11 @@ GCC_TEST_DIR = os.path.join(GCC_SRC_DIR, 'gcc', 'testsuite')
 V8_SRC_DIR = os.path.join(WORK_DIR, 'v8', 'v8')
 os.environ['GYP_GENERATORS'] = 'ninja'  # Used to build V8.
 
+MOZ_BASE_DIR = os.path.join(WORK_DIR, 'mozilla')
+MOZ_SRC_DIR = os.path.join(MOZ_BASE_DIR, 'gecko-dev')
+MOZ_OUT_DIR = os.path.join(MOZ_BASE_DIR, 'builds', 'x64.debug')
+MOZ_CLONE_DEPTH = 1
+
 SEXPR_SRC_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 SPEC_SRC_DIR = os.path.join(WORK_DIR, 'spec')
@@ -474,53 +479,55 @@ def NoSync(*args):
   pass
 
 ALL_SOURCES = [
-    Source('waterfall', SCRIPT_DIR, None, custom_sync=NoSync),
-    Source('llvm', LLVM_SRC_DIR,
-           LLVM_GITHUB_MIRROR_BASE + 'llvm'),
-    Source('clang', CLANG_SRC_DIR,
-           LLVM_GITHUB_MIRROR_BASE + 'clang'),
-    Source('compiler-rt', COMPILER_RT_SRC_DIR,
-           LLVM_OFFICIAL_MIRROR_BASE + 'compiler-rt'),
+    # Source('waterfall', SCRIPT_DIR, None, custom_sync=NoSync),
+    # Source('llvm', LLVM_SRC_DIR,
+           # LLVM_GITHUB_MIRROR_BASE + 'llvm'),
+    # Source('clang', CLANG_SRC_DIR,
+           # LLVM_GITHUB_MIRROR_BASE + 'clang'),
+    # Source('compiler-rt', COMPILER_RT_SRC_DIR,
+           # LLVM_OFFICIAL_MIRROR_BASE + 'compiler-rt'),
     # TODO(dschuff): re-enable this when we switch back to external/llvm.org
     # as the git mirror base, or when we actually begin to use it.
     # Source('llvm-test-suite', LLVM_TEST_SUITE_SRC_DIR,
     #        LLVM_MIRROR_BASE + 'test-suite'),
-    Source('emscripten', EMSCRIPTEN_SRC_DIR,
-           EMSCRIPTEN_GIT_BASE + 'emscripten',
-           checkout=RemoteBranch('incoming')),
-    Source('fastcomp', FASTCOMP_SRC_DIR,
-           EMSCRIPTEN_GIT_BASE + 'emscripten-fastcomp',
-           checkout=RemoteBranch('incoming')),
-    Source('fastcomp-clang',
-           os.path.join(FASTCOMP_SRC_DIR, 'tools', 'clang'),
-           EMSCRIPTEN_GIT_BASE + 'emscripten-fastcomp-clang',
-           checkout=RemoteBranch('incoming')),
+    # Source('emscripten', EMSCRIPTEN_SRC_DIR,
+           # EMSCRIPTEN_GIT_BASE + 'emscripten',
+           # checkout=RemoteBranch('incoming')),
+    # Source('fastcomp', FASTCOMP_SRC_DIR,
+           # EMSCRIPTEN_GIT_BASE + 'emscripten-fastcomp',
+           # checkout=RemoteBranch('incoming')),
+    # Source('fastcomp-clang',
+           # os.path.join(FASTCOMP_SRC_DIR, 'tools', 'clang'),
+           # EMSCRIPTEN_GIT_BASE + 'emscripten-fastcomp-clang',
+           # checkout=RemoteBranch('incoming')),
     Source('gcc', GCC_SRC_DIR,
            GIT_MIRROR_BASE + 'chromiumos/third_party/gcc',
            checkout=GCC_REVISION, depth=GCC_CLONE_DEPTH),
-    Source('v8', V8_SRC_DIR,
-           GIT_MIRROR_BASE + 'v8/v8',
-           custom_sync=ChromiumFetchSync),
-    Source('chromium-clang', PREBUILT_CLANG,
-           GIT_MIRROR_BASE + 'chromium/src/tools/clang',
-           custom_sync=SyncPrebuiltClang),
-    Source('cmake', '', '',  # The source and git args are ignored.
-           custom_sync=SyncPrebuiltCMake),
-    Source('sexpr', SEXPR_SRC_DIR,
-           WASM_GIT_BASE + 'sexpr-wasm-prototype.git'),
-    Source('spec', SPEC_SRC_DIR,
-           WASM_GIT_BASE + 'spec.git'),
-    Source('binaryen', BINARYEN_SRC_DIR,
-           WASM_GIT_BASE + 'binaryen.git'),
-    Source('binaryen-0xb', BINARYEN_0xB_SRC_DIR,
-           WASM_GIT_BASE + 'binaryen.git',
-           # This is the commit hash for the last 0xb-compatible binaryen
-           # version. This is hardcoded because we shouldn't keep this after
-           # the rest of the toolchain is 0xc-compatible.
-           checkout='79029eb346b721eacdaa28326fe8e7b50042611c'),
-    Source('musl', MUSL_SRC_DIR,
-           WASM_GIT_BASE + 'musl.git',
-           checkout=RemoteBranch('wasm-prototype-1'))
+    # Source('v8', V8_SRC_DIR,
+           # GIT_MIRROR_BASE + 'v8/v8',
+           # custom_sync=ChromiumFetchSync),
+    Source('spidermonkey', MOZ_SRC_DIR,
+           GITHUB_MIRROR_BASE + 'mozilla/gecko-dev', depth=MOZ_CLONE_DEPTH),
+    # Source('chromium-clang', PREBUILT_CLANG,
+           # GIT_MIRROR_BASE + 'chromium/src/tools/clang',
+           # custom_sync=SyncPrebuiltClang),
+    # Source('cmake', '', '',  # The source and git args are ignored.
+           # custom_sync=SyncPrebuiltCMake),
+    # Source('sexpr', SEXPR_SRC_DIR,
+           # WASM_GIT_BASE + 'sexpr-wasm-prototype.git'),
+    # Source('spec', SPEC_SRC_DIR,
+           # WASM_GIT_BASE + 'spec.git'),
+    # Source('binaryen', BINARYEN_SRC_DIR,
+           # WASM_GIT_BASE + 'binaryen.git'),
+    # Source('binaryen-0xb', BINARYEN_0xB_SRC_DIR,
+           # WASM_GIT_BASE + 'binaryen.git',
+           # # This is the commit hash for the last 0xb-compatible binaryen
+           # # version. This is hardcoded because we shouldn't keep this after
+           # # the rest of the toolchain is 0xc-compatible.
+           # checkout='79029eb346b721eacdaa28326fe8e7b50042611c'),
+    # Source('musl', MUSL_SRC_DIR,
+           # WASM_GIT_BASE + 'musl.git',
+           # checkout=RemoteBranch('wasm-prototype-1'))
 ]
 
 
@@ -1142,6 +1149,8 @@ def run(sync_filter, build_filter, test_filter, options):
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
   SyncRepos(sync_filter, options.sync_lkgr)
+  # FIXME bbouvier
+  print "YO, STOP"
   repos = None
   if sync_filter.Check(''):
     repos = GetRepoInfo()
